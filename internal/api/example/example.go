@@ -23,8 +23,13 @@ func NewHandler(rl rateLimiter, log *slog.Logger) *Handler {
 
 func (api *Handler) Handle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ip := r.RemoteAddr
+		if r.Method != http.MethodGet {
+			http.Error(w, "only get method is allowed", http.StatusMethodNotAllowed)
 
+			return
+		}
+
+		ip := r.RemoteAddr
 		log := api.log.With("ip", ip)
 
 		if !api.rl.IsAllowed(ip) {
@@ -33,6 +38,7 @@ func (api *Handler) Handle() http.HandlerFunc {
 
 			return
 		}
+
 		log.Info("request accepted")
 	}
 }

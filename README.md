@@ -53,7 +53,7 @@ This API server provides a robust and efficient way to handle HTTP requests with
 Ensure you have a proper testing environment set up. To run the tests, execute:
 
 ```bash
-go test ./...
+go clean --testcache && go test ./...
 ```
 
 ## Configuration

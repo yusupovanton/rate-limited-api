@@ -63,3 +63,16 @@ func (s *HandlerSuite) TestHandleRequestDenied() {
 
 	s.Require().Equal(http.StatusTooManyRequests, recorder.Code)
 }
+
+func (s *HandlerSuite) TestHandleMethodIsNotAllo() {
+	req, _ := http.NewRequest(http.MethodPatch, "/example", nil)
+	req.RemoteAddr = dummyIP
+
+	recorder := httptest.NewRecorder()
+
+	handlerFunc := s.handler.Handle()
+
+	handlerFunc.ServeHTTP(recorder, req)
+
+	s.Require().Equal(http.StatusMethodNotAllowed, recorder.Code)
+}
