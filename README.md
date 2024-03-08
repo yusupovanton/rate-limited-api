@@ -25,9 +25,6 @@ This API server provides a robust and efficient way to handle HTTP requests with
    git clone https://github.com/yusupovanton/rate-limited-api
    ```
 2. Navigate to the project directory:
-   ```bash
-   cd rate-limited-api
-   ```
 
 3. Load environment variables:
     - Copy the `.env.example` file to `.env` and adjust the variables to match your setup.
@@ -48,20 +45,13 @@ This API server provides a robust and efficient way to handle HTTP requests with
   ./apiserver
   ```
 
-### Testing
-
-Ensure you have a proper testing environment set up. To run the tests, execute:
-
-```bash
-go clean --testcache && go test ./...
-```
-
 ## Configuration
 
 The server configuration is managed through environment variables. The following are key variables:
 
 - `LIMIT_PER_USER`: The number of requests per second allowed for one user. Default is 2.
 - `RESET_TIME_FRAME`: The timeframe after which the rate limit resets. Default is 30s
+- `PORT`: The port at which the server will be run. Default is :8080
 
 For more details on configuration, refer to the `.env.example` file.
 
@@ -77,20 +67,18 @@ For more details on configuration, refer to the `.env.example` file.
 This handler processes incoming HTTP requests, applying rate limiting based on the client's IP address. Requests that exceed the rate limit are denied to maintain fair usage and system stability.
 
 #### Request:
-- **Headers:**
-    - None specified. Customize this section based on your actual requirements.
 - **Parameters:**
     - None. The handler operates based on the requester's IP address.
 
 #### Responses:
 - **200 OK**
     - **Description:** The request has been accepted and processed successfully. This indicates that the request did not exceed the rate limit.
-    - **Body:** Not applicable. Customize this section if your handler returns a response body.
 
 - **429 Too Many Requests**
     - **Description:** The request has been denied due to exceeding the rate limit. This status is returned to prevent abuse and ensure service availability.
-    - **Body:**
-        - The response body for this example is not explicitly defined. You can customize this section to include a JSON response or other content indicating the rate limit has been exceeded.
+
+- **405 Method Not Allowed**
+    - **Description:** You are using something other than GET
 
 #### Logging:
 - **Request Accepted:**
@@ -103,3 +91,18 @@ This handler processes incoming HTTP requests, applying rate limiting based on t
 - The rate limiting logic is encapsulated by the `rateLimiter` interface, which assesses whether a request from a given IP address should be allowed based on predefined criteria (e.g., number of requests per time window).
 
 ---
+
+### Testing
+
+Ensure you have a proper testing environment set up. To run the tests, execute:
+
+```bash
+go clean --testcache && go test ./...
+```
+
+You should also be able to test the service manually. Run the server as described above (or use your IDE of choice) and 
+run this curl `curl --location 'localhost:8080/example'`. If you set everything up correctly, you should be blocked after 
+n successful requests and unblocked again after t, where n and t are set properly. Please also note you should use your port
+if you specify it otherwise in your config file.
+
+--- 
